@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package netflux;
+
+option go_package = "github.com/dellinger2023/net-flux/gen;gen";
+
+// 访问拒绝事件, 限流拒绝
+message AccessDeniedEvent {
+    // 用户ID
+    string user_id  = 1;
+    // 访问IP
+    string ip       = 2;
+    // 访问端口
+    int32 port      = 3;
+    // 访问路径
+    string path     = 4;
+    // 访问时间
+    int64 timestamp = 5;
+    // 访问额外信息
+    map<string, string> extra = 6;
+}
+
+// IP封禁事件, 白名单封禁
+message IpBlockedEvent {
+    // 用户ID
+    string user_id  = 1;
+    // 封禁IP
+    string ip       = 2;
+    // 访问路径
+    string path     = 3;
+    // 封禁时间
+    int64 timestamp = 4;
+    // 封禁额外信息
+    map<string, string> extra = 5;
+}

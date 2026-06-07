@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+package netflux;
+
+option go_package = "github.com/dellinger2023/net-flux/gen;gen";

@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package netflux;
+
+option go_package = "github.com/dellinger2023/net-flux/gen;gen";
+
+// Service instance
+message Instance {
+    // Instance ID
+    string  instance_id     = 1;
+    // Instance name
+    string  instance_name   = 2;
+    // 公网 IP
+    string  public_ip       = 3;
+    // 公网端口
+    int32   public_port     = 4;
+    // 内网 IP
+    string  private_ip      = 5;
+    // 内网端口
+    int32   private_port    = 6;
+    // 容器内 IP
+    string  inner_ip        = 7;
+    // 容器内端口
+    int32   inner_port      = 8;
+    // 权重
+    float   weight          = 9;
+    // 健康状态
+    bool    healthy         = 10;
+    // 是否启用
+    bool    enable         = 11;
+    // 是否临时实例
+    bool    ephemeral       = 12;
+    // 机房节点ID
+    int32   node            = 13;
+    // 额外信息
+    map<string, string> extra = 14;
+};
+
+// Service
+message Service {
+    // 实例列表
+    repeated Instance instances = 1;
+    // 集群名称
+    string  cluster     = 2;
+    // 服务名称
+    string  name        = 3;
+    // 分组名称
+    string  group_name  = 4;
+    // 是否有效
+    bool    valid       = 5;
+}
+
+message Deregister {
+    // Instance ID
+    string  instance_id     = 1;
+    // Instance name
+    string  instance_name   = 2;
+    // 公网 IP
+    string ip               = 3;
+    // 公网端口
+    int32 port              = 4;
+}
+
+message Lookup {
+    // Service name
+    string  service_name    = 1;
+    // Node ID
+    int32   node            = 2;
+    // 是否健康
+    bool    healthy         = 3;
+}
+
+message LookupAck {
+    repeated Service services = 1;
+}

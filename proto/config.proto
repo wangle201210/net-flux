@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package netflux;
+
+option go_package = "github.com/dellinger2023/net-flux/gen;gen";
+
+// 租户白名单IP变更
+message WhiteipChanged {
+    // 租户ID
+    string tenant_id = 1;
+    // 白名单IP列表
+    repeated string whiteips = 2;
+}
+
+// 租户限流配置变更
+message LimitChanged {
+    // 租户ID
+    string tenant_id = 1;
+    // 限流配置
+    int32 limit = 2;
+}
+

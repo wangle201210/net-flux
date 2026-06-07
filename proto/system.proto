@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package netflux;
+
+option go_package = "github.com/dellinger2023/net-flux/gen;gen";
+
+// 系统心跳指令 - 发送
+message Ping {
+    int64 timestamp = 1;
+};
+
+// 系统心跳指令 - 接收
+message Pong {
+    int64 timestamp = 1;
+};

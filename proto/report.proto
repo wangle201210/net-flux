@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package netflux;
+
+import "base.proto";
+
+option go_package = "github.com/dellinger2023/net-flux/gen;gen";
+
+// 机器状态报告
+message MachineMetric {
+    // 机器ID
+    string machine_id = 1;
+
+    // CPU 使用率
+    double cpu_usage = 2;
+    // 内存占用
+    int32 mem_used = 3;
+    // 内存总数
+    int32 mem_total = 4;
+    // 磁盘占用
+    int32 disk_used = 5;
+    // 磁盘总数
+    int32 disk_total = 6;
+
+    // 机器额外信息
+    map<string, string> extra = 7;
+}
+
+// 网络状态报告
+message NetworkMetric {
+    // 机器ID
+    string machine_id = 1;
+    // 源IP
+    string source_ip = 2;
+    // 目的IP
+    string destination_ip = 3;
+    // 网络延迟(ms)
+    int32 rtt = 4;
+    // 网络吞吐量(bps)
+    int32 throughput = 5;
+    // 网络额外信息
+    map<string, string> extra = 6;
+}
+
+// 流状态报告
+message StreamMetric {
+    // 机器ID
+    string machine_id           = 1;
+    // 服务器类型
+    MachineType machine_type    = 2;
+    // 流ID
+    string stream_id            = 3;
+    // 流状态
+    StreamStatus status         = 4;
+    // 视频编码格式
+    StreamCodec video_codec     = 5;
+    // 音频编码格式
+    StreamCodec audio_codec     = 6;
+    // 流协议
+    StreamProtocol protocol     = 7;
+    // 码率
+    int32 bitrate               = 8;
+    // 分辨率
+    int32 width                 = 9;
+    // 高度
+    int32 height                = 10;
+    // 流路径
+    string stream_path          = 11;
+    // 流别名访问
+    string stream_alias         = 12;
+    // 流额外信息
+    map<string, string> extra   = 13;
+}

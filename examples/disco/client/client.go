@@ -1,0 +1,157 @@
+package main
+
+import (
+	"context"
+	"errors"
+	"flag"
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/dellinger2023/net-flux/gen"
+	"github.com/dellinger2023/net-flux/pkg/logger"
+	"github.com/dellinger2023/net-flux/pkg/network"
+	"google.golang.org/protobuf/proto"
+)
+
+var (
+	addr   string
+	slogan = `
+	=============================
+	NetFlux Discovery Client
+	=============================
+	1. 注册服务
+	2. 注销服务
+	3. 查询服务
+	4. 上报数据
+	5. 上报配置
+	6. 上报事件
+	7. 上报控制
+	=============================
+	请选择:`
+)
+
+func main() {
+	flag.StringVar(&addr, "addr", "127.0.0.1:1911", "disco server address")
+	flag.Parse()
+
+	cli, err := network.NewTcpClient(addr, &eventHandler{}, nil)
+	if err != nil {
+		logger.Fatalf("failed to create disco client: %v", err)
+	}
+
+	if err := cli.Connect(); err != nil {
+		logger.Fatalf("failed to connect to disco server: %v", err)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		<-sigChan
+		logger.Info("disco client is shutting down...")
+		cancel()
+	}()
+
+	go interactiveLoop(ctx, cli)
+
+	if err := cli.Wait(ctx); err != nil && !errors.Is(err, context.Canceled) {
+		logger.Errorf("client exited: %v", err)
+	}
+}
+
+func interactiveLoop(ctx context.Context, cli *network.TcpClient) {
+	for ctx.Err() == nil {
+		logger.Info(slogan)
+		var choice int
+		if _, err := fmt.Scanln(&choice); err != nil {
+			return
+		}
+		switch choice {
+		case 1:
+			logger.Info("注册服务")
+			instance := &gen.Instance{
+				InstanceName: "test",
+				PublicIp:     "124.79.229.235",
+				PublicPort:   80,
+				PrivateIp:    "127.0.0.1",
+				PrivatePort:  8080,
+				InnerIp:      "10.0.0.1",
+				InnerPort:    9000,
+				Weight:       1.0,
+				Healthy:      true,
+				Enable:       true,
+				Ephemeral:    true,
+			}
+			cli.Write(uint8(gen.CMD_DISCOVERY), uint8(gen.SCMDDisco_REGISTER), instance)
+		case 2:
+			logger.Info("注销服务")
+			deregister := &gen.Deregister{
+				InstanceName: "test",
+				Ip:           "127.0.0.1",
+				Port:         8080,
+			}
+			cli.Write(uint8(gen.CMD_DISCOVERY), uint8(gen.SCMDDisco_DEREGISTER), deregister)
+		case 3:
+			logger.Info("查询服务")
+			lookup := &gen.Lookup{
+				ServiceName: "test",
+				Node:        1,
+				Healthy:     true,
+			}
+			cli.Write(uint8(gen.CMD_DISCOVERY), uint8(gen.SCMDDisco_LOOKUP), lookup)
+		default:
+			logger.Info("无效的选择")
+		}
+	}
+}
+
+type eventHandler struct{}
+
+func (h *eventHandler) OnConnect(conn network.TCPConn) error {
+	logger.Infof("new connection from %s", conn.RemoteAddr().String())
+	return nil
+}
+
+func (h *eventHandler) OnClose(conn network.TCPConn) {
+	logger.Infof("connection from %s closed", conn.RemoteAddr().String())
+}
+
+func (h *eventHandler) OnCmdSystem(conn network.TCPConn, pkt proto.Message) error {
+	logger.Infof("system command: %v", pkt)
+	switch pkt := pkt.(type) {
+	case *gen.Pong:
+		logger.Infof("RTT = %vms", time.Since(time.Unix(pkt.Timestamp, 0)).Milliseconds())
+		return nil
+	default:
+		return fmt.Errorf("unknown system command: %T", pkt)
+	}
+}
+
+func (h *eventHandler) OnCmdDiscovery(conn network.TCPConn, pkt proto.Message) error {
+	logger.Infof("discovery command: %v", pkt)
+	return nil
+}
+
+func (h *eventHandler) OnCmdDataReport(conn network.TCPConn, pkt proto.Message) error {
+	logger.Infof("data report command: %v", pkt)
+	return nil
+}
+func (h *eventHandler) OnCmdConfig(conn network.TCPConn, pkt proto.Message) error {
+	logger.Infof("config command: %v", pkt)
+	return nil
+}
+
+func (h *eventHandler) OnCmdEvent(conn network.TCPConn, pkt proto.Message) error {
+	logger.Infof("event command: %v", pkt)
+	return nil
+}
+
+func (h *eventHandler) OnCmdControl(conn network.TCPConn, pkt proto.Message) error {
+	logger.Infof("control command: %v", pkt)
+	return nil
+}

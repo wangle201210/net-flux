@@ -193,7 +193,8 @@ func (n *nacosDiscoClient) GetServiceInstancesByName(serviceName string) ([]*gen
 // RegisterInstance implements DiscoveryClient.
 func (n *nacosDiscoClient) RegisterInstance(instance *gen.Instance) error {
 	inst := fromInstance(instance)
-	return n.namingClient.RegisterInstance(inst.ServiceName, n.groupName, inst.Ip, inst.Port, inst.Metadata)
+	return n.namingClient.RegisterInstance(inst.ServiceName, strconv.Itoa(int(instance.Node)),
+		inst.Ip, inst.Port, inst.Metadata)
 }
 
 // GetGroupName implements DiscoverClient.

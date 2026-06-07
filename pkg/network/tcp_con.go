@@ -16,18 +16,19 @@ import (
 )
 
 type tcpConn struct {
-	conn       net.Conn
-	id         uint32
-	closed     atomic.Bool
-	closeOnce  sync.Once
-	closeChan  chan struct{}
-	options    TCPConnOptions
-	handler    connHandler
-	event      EventHandler
-	reader     TCPReader
-	writer     TCPWriter
-	writeMu    sync.Mutex
-	outgoingCh chan TCPConn
+	conn         net.Conn
+	id           uint32
+	closed       atomic.Bool
+	skipOutgoing atomic.Bool
+	closeOnce    sync.Once
+	closeChan    chan struct{}
+	options      TCPConnOptions
+	handler      connHandler
+	event        EventHandler
+	reader       TCPReader
+	writer       TCPWriter
+	writeMu      sync.Mutex
+	outgoingCh   chan TCPConn
 }
 
 func NewServerConn(conn net.Conn, opts TCPConnOptions) (TCPConn, error) {
@@ -276,6 +277,19 @@ func (c *tcpConn) ConnectWithTLS(addr string, tlsConfig *tls.Config) error {
 }
 
 func (c *tcpConn) Close() error {
+	return c.close(false)
+}
+
+// abortClose forcefully closes the connection without blocking shutdown.
+// Server shutdown uses skipOutgoing=true to avoid deadlocking the accept loop.
+func (c *tcpConn) abortClose(skipOutgoing bool) error {
+	if skipOutgoing {
+		c.skipOutgoing.Store(true)
+	}
+	return c.close(true)
+}
+
+func (c *tcpConn) close(abort bool) error {
 	var err error
 	c.closeOnce.Do(func() {
 		if c.conn == nil {
@@ -286,13 +300,28 @@ func (c *tcpConn) Close() error {
 		if c.closeChan != nil {
 			close(c.closeChan)
 		}
-		if c.options.ReconnectInterval > 0 {
-			go c.reconnect()
-		}
 		if c.handler != nil {
 			c.handler.OnClose(c)
 		}
-		err = c.conn.Close()
+
+		conn := c.conn
+		c.conn = nil
+		if abort {
+			if tc, ok := conn.(*net.TCPConn); ok {
+				_ = tc.SetLinger(0)
+				_ = tc.CloseWrite()
+			}
+			past := time.Now()
+			_ = conn.SetReadDeadline(past)
+			_ = conn.SetWriteDeadline(past)
+			go func() { _ = conn.Close() }()
+		} else {
+			err = conn.Close()
+		}
+
+		if c.options.ReconnectInterval > 0 && c.outgoingCh == nil {
+			go c.reconnect()
+		}
 	})
 	return err
 }
@@ -332,14 +361,24 @@ func (c *tcpConn) OnClose(conn TCPConn) {
 	if c.event != nil {
 		c.event.OnClose(conn)
 	}
-	if c.outgoingCh != nil {
-		c.outgoingCh <- conn
+	if c.outgoingCh != nil && !c.skipOutgoing.Load() {
+		select {
+		case c.outgoingCh <- conn:
+		default:
+		}
 	}
 }
 
 func (c *tcpConn) OnMessage(conn TCPConn, head *PacketHeader, data []byte) error {
 	if c.event == nil {
 		return nil
+	}
+	if c.options.ParentCtx != nil {
+		select {
+		case <-c.options.ParentCtx.Done():
+			return c.options.ParentCtx.Err()
+		default:
+		}
 	}
 	switch head.CMD {
 	case uint8(gen.CMD_SYSTEM):

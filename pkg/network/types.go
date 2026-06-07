@@ -1,9 +1,11 @@
 package network
 
 import (
+	"context"
 	"crypto/tls"
 	"errors"
 	"net"
+	"sync"
 	"time"
 
 	"google.golang.org/protobuf/proto"
@@ -71,6 +73,12 @@ type TCPConnOptions struct {
 
 	// OutgoingCh is the channel of outgoing connections.
 	OutgoingCh chan TCPConn
+
+	// ParentCtx is cancelled when the server/client shuts down.
+	ParentCtx context.Context
+
+	// ReaderWG tracks active read loops; server shutdown waits on it.
+	ReaderWG *sync.WaitGroup
 }
 
 // TCPConn is an interface of methods that are used as callbacks on a connection.

@@ -7,7 +7,9 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
+	"time"
 
 	"github.com/dellinger2023/net-flux/gen"
 	"github.com/dellinger2023/net-flux/pkg/logger"
@@ -54,6 +56,7 @@ func main() {
 	if err != nil {
 		logger.Fatalf("failed to create disco client: %v", err)
 	}
+	time.Sleep(time.Second)
 
 	logger.Info("disco server is starting...")
 	logger.Info("================================================")
@@ -104,7 +107,8 @@ func (h *eventHandler) OnCmdDiscovery(conn network.TCPConn, pkt proto.Message) e
 	writer := conn.(network.TCPWriter)
 	switch pkt := pkt.(type) {
 	case *gen.Instance:
-		logger.Infof("register instance: %v", pkt)
+		logger.Infof("register instance: name=%s node=%d payload=%v",
+			pkt.GetInstanceName(), pkt.GetNode(), pkt)
 		err := discoClient.RegisterInstance(pkt)
 		if err != nil {
 			return err
@@ -119,7 +123,7 @@ func (h *eventHandler) OnCmdDiscovery(conn network.TCPConn, pkt proto.Message) e
 
 	case *gen.Lookup:
 		logger.Infof("lookup instance: %v", pkt)
-		inst, err := discoClient.GetServiceInstanceByGroup(pkt.ServiceName, string(pkt.Node))
+		inst, err := discoClient.GetServiceInstanceByGroup(pkt.ServiceName, strconv.Itoa(int(pkt.Node)))
 		if err != nil {
 			return err
 		}
@@ -128,7 +132,7 @@ func (h *eventHandler) OnCmdDiscovery(conn network.TCPConn, pkt proto.Message) e
 			Instances: []*gen.Instance{inst},
 			Cluster:   "",
 			Name:      inst.InstanceName,
-			GroupName: string(inst.Node),
+			GroupName: strconv.Itoa(int(inst.Node)),
 			Valid:     pkt.Healthy,
 		})
 		return writer.WritePacket(

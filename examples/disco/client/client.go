@@ -18,7 +18,8 @@ import (
 
 var (
 	addr   string
-	slogan = `
+	node   int = 1
+	slogan     = `
 	=============================
 	NetFlux Discovery Client
 	=============================
@@ -35,6 +36,7 @@ var (
 
 func main() {
 	flag.StringVar(&addr, "addr", "127.0.0.1:1911", "disco server address")
+	flag.IntVar(&node, "node", 1, "机房节点 ID")
 	flag.Parse()
 
 	cli, err := network.NewTcpClient(addr, &eventHandler{}, nil)
@@ -86,8 +88,12 @@ func interactiveLoop(ctx context.Context, cli *network.TcpClient) {
 				Healthy:      true,
 				Enable:       true,
 				Ephemeral:    true,
+				Node:         int32(node),
 			}
-			cli.Write(uint8(gen.CMD_DISCOVERY), uint8(gen.SCMDDisco_REGISTER), instance)
+			logger.Infof("send register, node=%d", instance.GetNode())
+			if err := cli.Write(uint8(gen.CMD_DISCOVERY), uint8(gen.SCMDDisco_REGISTER), instance); err != nil {
+				logger.Errorf("register write failed: %v", err)
+			}
 		case 2:
 			logger.Info("注销服务")
 			deregister := &gen.Deregister{
@@ -95,7 +101,9 @@ func interactiveLoop(ctx context.Context, cli *network.TcpClient) {
 				Ip:           "127.0.0.1",
 				Port:         8080,
 			}
-			cli.Write(uint8(gen.CMD_DISCOVERY), uint8(gen.SCMDDisco_DEREGISTER), deregister)
+			if err := cli.Write(uint8(gen.CMD_DISCOVERY), uint8(gen.SCMDDisco_DEREGISTER), deregister); err != nil {
+				logger.Errorf("deregister write failed: %v", err)
+			}
 		case 3:
 			logger.Info("查询服务")
 			lookup := &gen.Lookup{
@@ -103,7 +111,9 @@ func interactiveLoop(ctx context.Context, cli *network.TcpClient) {
 				Node:        1,
 				Healthy:     true,
 			}
-			cli.Write(uint8(gen.CMD_DISCOVERY), uint8(gen.SCMDDisco_LOOKUP), lookup)
+			if err := cli.Write(uint8(gen.CMD_DISCOVERY), uint8(gen.SCMDDisco_LOOKUP), lookup); err != nil {
+				logger.Errorf("lookup write failed: %v", err)
+			}
 		default:
 			logger.Info("无效的选择")
 		}

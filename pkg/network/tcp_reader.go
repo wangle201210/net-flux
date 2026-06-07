@@ -17,6 +17,7 @@ type tcpReader struct {
 	buff      []byte
 	closeOnce sync.Once
 	handler   connHandler
+	readerWG  *sync.WaitGroup
 }
 
 func newReader(conn TCPConn, handler connHandler) (TCPReader, error) {
@@ -32,6 +33,10 @@ func newReader(conn TCPConn, handler connHandler) (TCPReader, error) {
 		buff:    make([]byte, 0, defaultReadBufferSize),
 		handler: handler,
 	}
+	if tc, ok := conn.(*tcpConn); ok && tc.options.ReaderWG != nil {
+		r.readerWG = tc.options.ReaderWG
+		r.readerWG.Add(1)
+	}
 	go r.loop()
 	return r, nil
 }
@@ -41,10 +46,22 @@ func (r *tcpReader) loop() {
 		if rc := recover(); rc != nil {
 			logger.Errorf("[id=%d] readLoop panic: %v", r.conn.ID(), rc)
 		}
-		r.conn.Close()
+		if !r.conn.IsClosed() {
+			if tc, ok := r.conn.(*tcpConn); ok {
+				tc.abortClose(false)
+			} else {
+				r.conn.Close()
+			}
+		}
 		logger.Infof("[id=%d] readLoop exited", r.conn.ID())
+		if r.readerWG != nil {
+			r.readerWG.Done()
+		}
 	}()
 	for {
+		if r.parentCtxDone() {
+			return
+		}
 		head, payload, err := r.ReadPacket()
 		if err != nil {
 			if !errors.Is(err, io.EOF) && !errors.Is(err, ErrClosed) && !r.conn.IsClosed() {
@@ -52,11 +69,28 @@ func (r *tcpReader) loop() {
 			}
 			return
 		}
+		if r.parentCtxDone() {
+			return
+		}
 		if r.handler != nil {
 			if err := r.handler.OnMessage(r.conn, head, payload); err != nil {
 				logger.Errorf("[id=%d] dispatch error: %v", r.conn.ID(), err)
+				return
 			}
 		}
+	}
+}
+
+func (r *tcpReader) parentCtxDone() bool {
+	tc, ok := r.conn.(*tcpConn)
+	if !ok || tc.options.ParentCtx == nil {
+		return false
+	}
+	select {
+	case <-tc.options.ParentCtx.Done():
+		return true
+	default:
+		return false
 	}
 }
 
@@ -107,6 +141,13 @@ func (r *tcpReader) ReadPacket() (*PacketHeader, []byte, error) {
 
 func (r *tcpReader) Close() {
 	r.closeOnce.Do(func() {
-		r.conn.Close()
+		if r.conn.IsClosed() {
+			return
+		}
+		if tc, ok := r.conn.(*tcpConn); ok {
+			tc.abortClose(false)
+		} else {
+			r.conn.Close()
+		}
 	})
 }

@@ -75,7 +75,6 @@ func (r *tcpReader) loop() {
 		if r.handler != nil {
 			if err := r.handler.OnMessage(r.conn, head, payload); err != nil {
 				logger.Errorf("[id=%d] dispatch error: %v", r.conn.ID(), err)
-				return
 			}
 		}
 	}

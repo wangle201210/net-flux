@@ -100,6 +100,7 @@ func interactiveLoop(ctx context.Context, cli *network.TcpClient) {
 				InstanceName: "test",
 				Ip:           "127.0.0.1",
 				Port:         8080,
+				Node:         int32(node),
 			}
 			if err := cli.Write(uint8(gen.CMD_DISCOVERY), uint8(gen.SCMDDisco_DEREGISTER), deregister); err != nil {
 				logger.Errorf("deregister write failed: %v", err)

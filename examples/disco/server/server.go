@@ -104,6 +104,15 @@ func (h *eventHandler) OnCmdSystem(conn network.TCPConn, pkt proto.Message) erro
 }
 
 func (h *eventHandler) OnCmdDiscovery(conn network.TCPConn, pkt proto.Message) error {
+	var err error
+	if discoClient == nil {
+		discoClient, err = naming.NewNacosDiscoverClient(discoCfg)
+		if err != nil {
+			logger.Errorf("failed to create disco client: %v", err)
+			return err
+		}
+	}
+
 	writer := conn.(network.TCPWriter)
 	switch pkt := pkt.(type) {
 	case *gen.Instance:
@@ -115,11 +124,15 @@ func (h *eventHandler) OnCmdDiscovery(conn network.TCPConn, pkt proto.Message) e
 		}
 
 	case *gen.Deregister:
-		logger.Infof("deregister instance: %v", pkt)
-		err := discoClient.DeregisterInstance(pkt.InstanceName, pkt.Ip, uint64(pkt.Port))
+		logger.Infof("deregister instance: [node=%d] %v", pkt.GetNode(), pkt)
+		err := discoClient.DeregisterInstance(pkt.InstanceName, strconv.Itoa(int(pkt.Node)), pkt.Ip, uint64(pkt.Port))
 		if err != nil {
+			logger.Errorf("failed to deregister instance: %v", err)
 			return err
 		}
+		logger.Infof("deregister instance success: [node=%d] %v", pkt.GetNode(), pkt)
+		discoClient.Close()
+		discoClient = nil
 
 	case *gen.Lookup:
 		logger.Infof("lookup instance: %v", pkt)

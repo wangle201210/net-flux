@@ -11,14 +11,14 @@ import (
 type DiscoClient interface {
 	GetGroupName() string
 	RegisterInstance(instance *gen.Instance) error
-	DeregisterInstance(serviceName, ip string, port uint64) error
-	GetAllServices() ([]string, error)
-	GetService(serviceName string, clusters []string) (*gen.Service, error)
+	DeregisterInstance(serviceName, groupName, ip string, port uint64) error
+	GetAllServices(groupName string) ([]string, error)
+	GetService(serviceName, groupName string, clusters []string) (*gen.Service, error)
 	GetServiceInstanceByName(serviceName string) (*gen.Instance, error)
-	GetServiceInstance(serviceName string, clusters []string) (*gen.Instance, error)
+	GetServiceInstance(serviceName, groupName string, clusters []string) (*gen.Instance, error)
 	GetServiceInstanceByGroup(serviceName, groupName string) (*gen.Instance, error)
 	GetServiceInstancesByName(serviceName string) ([]*gen.Instance, error)
-	GetServiceInstances(serviceName string, clusters []string) ([]*gen.Instance, error)
+	GetServiceInstances(serviceName, groupName string, clusters []string) ([]*gen.Instance, error)
 
 	SetConfig(dataId, content string) error
 	GetConfig(dataId string) (string, error)
@@ -26,6 +26,8 @@ type DiscoClient interface {
 	ListenConfig(dataId string, onChange func(namespace, group, dataId, data string)) error
 	CancelListenConfig(dataId string) error
 	SearchConfig(search, dataId string) (*ConfigPage, error)
+
+	Close()
 }
 
 type nacosDiscoClient struct {
@@ -96,19 +98,19 @@ func (n *nacosDiscoClient) SetConfig(dataId string, content string) error {
 
 // DeregisterInstance implements DiscoveryClient.
 func (n *nacosDiscoClient) DeregisterInstance(
-	serviceName string, ip string, port uint64) error {
-	return n.namingClient.DeregisterInstance(serviceName, n.groupName, ip, port)
+	serviceName, groupName, ip string, port uint64) error {
+	return n.namingClient.DeregisterInstance(serviceName, groupName, ip, port)
 }
 
 // GetAllServices implements DiscoveryClient.
-func (n *nacosDiscoClient) GetAllServices() ([]string, error) {
-	return n.namingClient.GetAllServices(n.groupName)
+func (n *nacosDiscoClient) GetAllServices(groupName string) ([]string, error) {
+	return n.namingClient.GetAllServices(groupName)
 }
 
 // GetService implements DiscoveryClient.
 func (n *nacosDiscoClient) GetService(
-	serviceName string, clusters []string) (*gen.Service, error) {
-	service, err := n.namingClient.GetService(serviceName, n.groupName, clusters)
+	serviceName, groupName string, clusters []string) (*gen.Service, error) {
+	service, err := n.namingClient.GetService(serviceName, groupName, clusters)
 	if err != nil {
 		return nil, err
 	}
@@ -133,8 +135,8 @@ func (n *nacosDiscoClient) GetService(
 
 // GetServiceInstance implements DiscoveryClient.
 func (n *nacosDiscoClient) GetServiceInstance(
-	serviceName string, clusters []string) (*gen.Instance, error) {
-	instance, err := n.namingClient.GetServiceInstance(serviceName, n.groupName, clusters)
+	serviceName, groupName string, clusters []string) (*gen.Instance, error) {
+	instance, err := n.namingClient.GetServiceInstance(serviceName, groupName, clusters)
 	if err != nil {
 		return nil, err
 	}
@@ -154,8 +156,8 @@ func (n *nacosDiscoClient) GetServiceInstanceByName(serviceName string) (*gen.In
 
 // GetServiceInstances implements DiscoveryClient.
 func (n *nacosDiscoClient) GetServiceInstances(
-	serviceName string, clusters []string) ([]*gen.Instance, error) {
-	items, err := n.namingClient.GetServiceInstances(serviceName, n.groupName, clusters)
+	serviceName, groupName string, clusters []string) ([]*gen.Instance, error) {
+	items, err := n.namingClient.GetServiceInstances(serviceName, groupName, clusters)
 	if err != nil {
 		return nil, err
 	}
@@ -212,6 +214,10 @@ func NewNacosDiscoverClient(cfg DiscoSetting) (DiscoClient, error) {
 		return nil, err
 	}
 	return &nacosDiscoClient{groupName: cfg.GroupName, configClient: configClient, namingClient: namingClient}, err
+}
+
+func (n *nacosDiscoClient) Close() {
+	n.namingClient.client.CloseClient()
 }
 
 func toInstance(instance *model.Instance) (*gen.Instance, error) {

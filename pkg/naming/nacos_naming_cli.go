@@ -69,6 +69,7 @@ func (c *NacosNamingClient) DeregisterInstance(serviceName, groupName, ip string
 		Ip:          ip,
 		Port:        uint64(port),
 	})
+
 	return err
 }
 

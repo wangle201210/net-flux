@@ -59,6 +59,8 @@ message Deregister {
     string ip               = 3;
     // 公网端口
     int32 port              = 4;
+    // 机房节点ID
+    int32 node              = 5;
 }
 
 message Lookup {

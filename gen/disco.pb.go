@@ -275,7 +275,9 @@ type Deregister struct {
 	// 公网 IP
 	Ip string `protobuf:"bytes,3,opt,name=ip,proto3" json:"ip,omitempty"`
 	// 公网端口
-	Port          int32 `protobuf:"varint,4,opt,name=port,proto3" json:"port,omitempty"`
+	Port int32 `protobuf:"varint,4,opt,name=port,proto3" json:"port,omitempty"`
+	// 机房节点ID
+	Node          int32 `protobuf:"varint,5,opt,name=node,proto3" json:"node,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -334,6 +336,13 @@ func (x *Deregister) GetIp() string {
 func (x *Deregister) GetPort() int32 {
 	if x != nil {
 		return x.Port
+	}
+	return 0
+}
+
+func (x *Deregister) GetNode() int32 {
+	if x != nil {
+		return x.Node
 	}
 	return 0
 }
@@ -480,14 +489,15 @@ const file_disco_proto_rawDesc = "" +
 	"\x04name\x18\x03 \x01(\tR\x04name\x12\x1d\n" +
 	"\n" +
 	"group_name\x18\x04 \x01(\tR\tgroupName\x12\x14\n" +
-	"\x05valid\x18\x05 \x01(\bR\x05valid\"v\n" +
+	"\x05valid\x18\x05 \x01(\bR\x05valid\"\x8a\x01\n" +
 	"\n" +
 	"Deregister\x12\x1f\n" +
 	"\vinstance_id\x18\x01 \x01(\tR\n" +
 	"instanceId\x12#\n" +
 	"\rinstance_name\x18\x02 \x01(\tR\finstanceName\x12\x0e\n" +
 	"\x02ip\x18\x03 \x01(\tR\x02ip\x12\x12\n" +
-	"\x04port\x18\x04 \x01(\x05R\x04port\"Y\n" +
+	"\x04port\x18\x04 \x01(\x05R\x04port\x12\x12\n" +
+	"\x04node\x18\x05 \x01(\x05R\x04node\"Y\n" +
 	"\x06Lookup\x12!\n" +
 	"\fservice_name\x18\x01 \x01(\tR\vserviceName\x12\x12\n" +
 	"\x04node\x18\x02 \x01(\x05R\x04node\x12\x18\n" +

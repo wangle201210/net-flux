@@ -31,25 +31,25 @@ type MachineMetric struct {
 	// CPU 核心数
 	CpuCount int32 `protobuf:"varint,3,opt,name=cpu_count,json=cpuCount,proto3" json:"cpu_count,omitempty"`
 	// 内存占用
-	MemUsed int32 `protobuf:"varint,4,opt,name=mem_used,json=memUsed,proto3" json:"mem_used,omitempty"`
+	MemUsed int64 `protobuf:"varint,4,opt,name=mem_used,json=memUsed,proto3" json:"mem_used,omitempty"`
 	// 内存总数
-	MemTotal int32 `protobuf:"varint,5,opt,name=mem_total,json=memTotal,proto3" json:"mem_total,omitempty"`
+	MemTotal int64 `protobuf:"varint,5,opt,name=mem_total,json=memTotal,proto3" json:"mem_total,omitempty"`
 	// 磁盘占用
-	DiskUsed int32 `protobuf:"varint,6,opt,name=disk_used,json=diskUsed,proto3" json:"disk_used,omitempty"`
+	DiskUsed int64 `protobuf:"varint,6,opt,name=disk_used,json=diskUsed,proto3" json:"disk_used,omitempty"`
 	// 磁盘总数
-	DiskTotal int32 `protobuf:"varint,7,opt,name=disk_total,json=diskTotal,proto3" json:"disk_total,omitempty"`
+	DiskTotal int64 `protobuf:"varint,7,opt,name=disk_total,json=diskTotal,proto3" json:"disk_total,omitempty"`
 	// 磁盘读取字节数
-	DiskReadBytes int32 `protobuf:"varint,8,opt,name=disk_read_bytes,json=diskReadBytes,proto3" json:"disk_read_bytes,omitempty"`
+	DiskReadBytes int64 `protobuf:"varint,8,opt,name=disk_read_bytes,json=diskReadBytes,proto3" json:"disk_read_bytes,omitempty"`
 	// 磁盘写入字节数
-	DiskWriteBytes int32 `protobuf:"varint,9,opt,name=disk_write_bytes,json=diskWriteBytes,proto3" json:"disk_write_bytes,omitempty"`
+	DiskWriteBytes int64 `protobuf:"varint,9,opt,name=disk_write_bytes,json=diskWriteBytes,proto3" json:"disk_write_bytes,omitempty"`
 	// 磁盘读取时间
-	DiskReadTime int32 `protobuf:"varint,10,opt,name=disk_read_time,json=diskReadTime,proto3" json:"disk_read_time,omitempty"`
+	DiskReadTime int64 `protobuf:"varint,10,opt,name=disk_read_time,json=diskReadTime,proto3" json:"disk_read_time,omitempty"`
 	// 磁盘写入时间
-	DiskWriteTime int32 `protobuf:"varint,11,opt,name=disk_write_time,json=diskWriteTime,proto3" json:"disk_write_time,omitempty"`
+	DiskWriteTime int64 `protobuf:"varint,11,opt,name=disk_write_time,json=diskWriteTime,proto3" json:"disk_write_time,omitempty"`
 	// 磁盘读取次数
-	DiskReadCount int32 `protobuf:"varint,12,opt,name=disk_read_count,json=diskReadCount,proto3" json:"disk_read_count,omitempty"`
+	DiskReadCount int64 `protobuf:"varint,12,opt,name=disk_read_count,json=diskReadCount,proto3" json:"disk_read_count,omitempty"`
 	// 磁盘写入次数
-	DiskWriteCount int32 `protobuf:"varint,13,opt,name=disk_write_count,json=diskWriteCount,proto3" json:"disk_write_count,omitempty"`
+	DiskWriteCount int64 `protobuf:"varint,13,opt,name=disk_write_count,json=diskWriteCount,proto3" json:"disk_write_count,omitempty"`
 	// 机器额外信息
 	Extra         map[string]string `protobuf:"bytes,14,rep,name=extra,proto3" json:"extra,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
@@ -107,70 +107,70 @@ func (x *MachineMetric) GetCpuCount() int32 {
 	return 0
 }
 
-func (x *MachineMetric) GetMemUsed() int32 {
+func (x *MachineMetric) GetMemUsed() int64 {
 	if x != nil {
 		return x.MemUsed
 	}
 	return 0
 }
 
-func (x *MachineMetric) GetMemTotal() int32 {
+func (x *MachineMetric) GetMemTotal() int64 {
 	if x != nil {
 		return x.MemTotal
 	}
 	return 0
 }
 
-func (x *MachineMetric) GetDiskUsed() int32 {
+func (x *MachineMetric) GetDiskUsed() int64 {
 	if x != nil {
 		return x.DiskUsed
 	}
 	return 0
 }
 
-func (x *MachineMetric) GetDiskTotal() int32 {
+func (x *MachineMetric) GetDiskTotal() int64 {
 	if x != nil {
 		return x.DiskTotal
 	}
 	return 0
 }
 
-func (x *MachineMetric) GetDiskReadBytes() int32 {
+func (x *MachineMetric) GetDiskReadBytes() int64 {
 	if x != nil {
 		return x.DiskReadBytes
 	}
 	return 0
 }
 
-func (x *MachineMetric) GetDiskWriteBytes() int32 {
+func (x *MachineMetric) GetDiskWriteBytes() int64 {
 	if x != nil {
 		return x.DiskWriteBytes
 	}
 	return 0
 }
 
-func (x *MachineMetric) GetDiskReadTime() int32 {
+func (x *MachineMetric) GetDiskReadTime() int64 {
 	if x != nil {
 		return x.DiskReadTime
 	}
 	return 0
 }
 
-func (x *MachineMetric) GetDiskWriteTime() int32 {
+func (x *MachineMetric) GetDiskWriteTime() int64 {
 	if x != nil {
 		return x.DiskWriteTime
 	}
 	return 0
 }
 
-func (x *MachineMetric) GetDiskReadCount() int32 {
+func (x *MachineMetric) GetDiskReadCount() int64 {
 	if x != nil {
 		return x.DiskReadCount
 	}
 	return 0
 }
 
-func (x *MachineMetric) GetDiskWriteCount() int32 {
+func (x *MachineMetric) GetDiskWriteCount() int64 {
 	if x != nil {
 		return x.DiskWriteCount
 	}
@@ -440,18 +440,18 @@ const file_report_proto_rawDesc = "" +
 	"machine_id\x18\x01 \x01(\tR\tmachineId\x12\x1b\n" +
 	"\tcpu_usage\x18\x02 \x01(\x01R\bcpuUsage\x12\x1b\n" +
 	"\tcpu_count\x18\x03 \x01(\x05R\bcpuCount\x12\x19\n" +
-	"\bmem_used\x18\x04 \x01(\x05R\amemUsed\x12\x1b\n" +
-	"\tmem_total\x18\x05 \x01(\x05R\bmemTotal\x12\x1b\n" +
-	"\tdisk_used\x18\x06 \x01(\x05R\bdiskUsed\x12\x1d\n" +
+	"\bmem_used\x18\x04 \x01(\x03R\amemUsed\x12\x1b\n" +
+	"\tmem_total\x18\x05 \x01(\x03R\bmemTotal\x12\x1b\n" +
+	"\tdisk_used\x18\x06 \x01(\x03R\bdiskUsed\x12\x1d\n" +
 	"\n" +
-	"disk_total\x18\a \x01(\x05R\tdiskTotal\x12&\n" +
-	"\x0fdisk_read_bytes\x18\b \x01(\x05R\rdiskReadBytes\x12(\n" +
-	"\x10disk_write_bytes\x18\t \x01(\x05R\x0ediskWriteBytes\x12$\n" +
+	"disk_total\x18\a \x01(\x03R\tdiskTotal\x12&\n" +
+	"\x0fdisk_read_bytes\x18\b \x01(\x03R\rdiskReadBytes\x12(\n" +
+	"\x10disk_write_bytes\x18\t \x01(\x03R\x0ediskWriteBytes\x12$\n" +
 	"\x0edisk_read_time\x18\n" +
-	" \x01(\x05R\fdiskReadTime\x12&\n" +
-	"\x0fdisk_write_time\x18\v \x01(\x05R\rdiskWriteTime\x12&\n" +
-	"\x0fdisk_read_count\x18\f \x01(\x05R\rdiskReadCount\x12(\n" +
-	"\x10disk_write_count\x18\r \x01(\x05R\x0ediskWriteCount\x127\n" +
+	" \x01(\x03R\fdiskReadTime\x12&\n" +
+	"\x0fdisk_write_time\x18\v \x01(\x03R\rdiskWriteTime\x12&\n" +
+	"\x0fdisk_read_count\x18\f \x01(\x03R\rdiskReadCount\x12(\n" +
+	"\x10disk_write_count\x18\r \x01(\x03R\x0ediskWriteCount\x127\n" +
 	"\x05extra\x18\x0e \x03(\v2!.netflux.MachineMetric.ExtraEntryR\x05extra\x1a8\n" +
 	"\n" +
 	"ExtraEntry\x12\x10\n" +

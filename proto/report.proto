@@ -34,8 +34,10 @@ message MachineMetric {
     int64 disk_read_count = 12;
     // 磁盘写入次数
     int64 disk_write_count = 13;
+    // 采集时间
+    int64 timestamp = 14;
     // 机器额外信息
-    map<string, string> extra = 14;
+    map<string, string> extra = 15;
 }
 
 // 网络状态报告
@@ -50,8 +52,10 @@ message NetworkMetric {
     int32 rtt = 4;
     // 网络吞吐量(bps)
     int32 throughput = 5;
+    // 采集时间
+    int64 timestamp = 6;
     // 网络额外信息
-    map<string, string> extra = 6;
+    map<string, string> extra = 7;
 }
 
 // 流状态报告
@@ -80,6 +84,8 @@ message StreamMetric {
     string stream_path          = 11;
     // 流别名访问
     string stream_alias         = 12;
+    // 采集时间
+    int64 timestamp             = 13;
     // 流额外信息
-    map<string, string> extra   = 13;
+    map<string, string> extra   = 14;
 }

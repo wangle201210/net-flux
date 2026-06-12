@@ -50,8 +50,10 @@ type MachineMetric struct {
 	DiskReadCount int64 `protobuf:"varint,12,opt,name=disk_read_count,json=diskReadCount,proto3" json:"disk_read_count,omitempty"`
 	// 磁盘写入次数
 	DiskWriteCount int64 `protobuf:"varint,13,opt,name=disk_write_count,json=diskWriteCount,proto3" json:"disk_write_count,omitempty"`
+	// 采集时间
+	Timestamp int64 `protobuf:"varint,14,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	// 机器额外信息
-	Extra         map[string]string `protobuf:"bytes,14,rep,name=extra,proto3" json:"extra,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Extra         map[string]string `protobuf:"bytes,15,rep,name=extra,proto3" json:"extra,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -177,6 +179,13 @@ func (x *MachineMetric) GetDiskWriteCount() int64 {
 	return 0
 }
 
+func (x *MachineMetric) GetTimestamp() int64 {
+	if x != nil {
+		return x.Timestamp
+	}
+	return 0
+}
+
 func (x *MachineMetric) GetExtra() map[string]string {
 	if x != nil {
 		return x.Extra
@@ -197,8 +206,10 @@ type NetworkMetric struct {
 	Rtt int32 `protobuf:"varint,4,opt,name=rtt,proto3" json:"rtt,omitempty"`
 	// 网络吞吐量(bps)
 	Throughput int32 `protobuf:"varint,5,opt,name=throughput,proto3" json:"throughput,omitempty"`
+	// 采集时间
+	Timestamp int64 `protobuf:"varint,6,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	// 网络额外信息
-	Extra         map[string]string `protobuf:"bytes,6,rep,name=extra,proto3" json:"extra,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Extra         map[string]string `protobuf:"bytes,7,rep,name=extra,proto3" json:"extra,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -268,6 +279,13 @@ func (x *NetworkMetric) GetThroughput() int32 {
 	return 0
 }
 
+func (x *NetworkMetric) GetTimestamp() int64 {
+	if x != nil {
+		return x.Timestamp
+	}
+	return 0
+}
+
 func (x *NetworkMetric) GetExtra() map[string]string {
 	if x != nil {
 		return x.Extra
@@ -302,8 +320,10 @@ type StreamMetric struct {
 	StreamPath string `protobuf:"bytes,11,opt,name=stream_path,json=streamPath,proto3" json:"stream_path,omitempty"`
 	// 流别名访问
 	StreamAlias string `protobuf:"bytes,12,opt,name=stream_alias,json=streamAlias,proto3" json:"stream_alias,omitempty"`
+	// 采集时间
+	Timestamp int64 `protobuf:"varint,13,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	// 流额外信息
-	Extra         map[string]string `protobuf:"bytes,13,rep,name=extra,proto3" json:"extra,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Extra         map[string]string `protobuf:"bytes,14,rep,name=extra,proto3" json:"extra,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -422,6 +442,13 @@ func (x *StreamMetric) GetStreamAlias() string {
 	return ""
 }
 
+func (x *StreamMetric) GetTimestamp() int64 {
+	if x != nil {
+		return x.Timestamp
+	}
+	return 0
+}
+
 func (x *StreamMetric) GetExtra() map[string]string {
 	if x != nil {
 		return x.Extra
@@ -434,7 +461,7 @@ var File_report_proto protoreflect.FileDescriptor
 const file_report_proto_rawDesc = "" +
 	"\n" +
 	"\freport.proto\x12\anetflux\x1a\n" +
-	"base.proto\"\xc1\x04\n" +
+	"base.proto\"\xdf\x04\n" +
 	"\rMachineMetric\x12\x1d\n" +
 	"\n" +
 	"machine_id\x18\x01 \x01(\tR\tmachineId\x12\x1b\n" +
@@ -451,12 +478,13 @@ const file_report_proto_rawDesc = "" +
 	" \x01(\x03R\fdiskReadTime\x12&\n" +
 	"\x0fdisk_write_time\x18\v \x01(\x03R\rdiskWriteTime\x12&\n" +
 	"\x0fdisk_read_count\x18\f \x01(\x03R\rdiskReadCount\x12(\n" +
-	"\x10disk_write_count\x18\r \x01(\x03R\x0ediskWriteCount\x127\n" +
-	"\x05extra\x18\x0e \x03(\v2!.netflux.MachineMetric.ExtraEntryR\x05extra\x1a8\n" +
+	"\x10disk_write_count\x18\r \x01(\x03R\x0ediskWriteCount\x12\x1c\n" +
+	"\ttimestamp\x18\x0e \x01(\x03R\ttimestamp\x127\n" +
+	"\x05extra\x18\x0f \x03(\v2!.netflux.MachineMetric.ExtraEntryR\x05extra\x1a8\n" +
 	"\n" +
 	"ExtraEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x97\x02\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb5\x02\n" +
 	"\rNetworkMetric\x12\x1d\n" +
 	"\n" +
 	"machine_id\x18\x01 \x01(\tR\tmachineId\x12\x1b\n" +
@@ -465,12 +493,13 @@ const file_report_proto_rawDesc = "" +
 	"\x03rtt\x18\x04 \x01(\x05R\x03rtt\x12\x1e\n" +
 	"\n" +
 	"throughput\x18\x05 \x01(\x05R\n" +
-	"throughput\x127\n" +
-	"\x05extra\x18\x06 \x03(\v2!.netflux.NetworkMetric.ExtraEntryR\x05extra\x1a8\n" +
+	"throughput\x12\x1c\n" +
+	"\ttimestamp\x18\x06 \x01(\x03R\ttimestamp\x127\n" +
+	"\x05extra\x18\a \x03(\v2!.netflux.NetworkMetric.ExtraEntryR\x05extra\x1a8\n" +
 	"\n" +
 	"ExtraEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd3\x04\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xf1\x04\n" +
 	"\fStreamMetric\x12\x1d\n" +
 	"\n" +
 	"machine_id\x18\x01 \x01(\tR\tmachineId\x127\n" +
@@ -488,8 +517,9 @@ const file_report_proto_rawDesc = "" +
 	" \x01(\x05R\x06height\x12\x1f\n" +
 	"\vstream_path\x18\v \x01(\tR\n" +
 	"streamPath\x12!\n" +
-	"\fstream_alias\x18\f \x01(\tR\vstreamAlias\x126\n" +
-	"\x05extra\x18\r \x03(\v2 .netflux.StreamMetric.ExtraEntryR\x05extra\x1a8\n" +
+	"\fstream_alias\x18\f \x01(\tR\vstreamAlias\x12\x1c\n" +
+	"\ttimestamp\x18\r \x01(\x03R\ttimestamp\x126\n" +
+	"\x05extra\x18\x0e \x03(\v2 .netflux.StreamMetric.ExtraEntryR\x05extra\x1a8\n" +
 	"\n" +
 	"ExtraEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +

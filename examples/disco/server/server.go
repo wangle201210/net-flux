@@ -156,16 +156,19 @@ func (h *eventHandler) OnCmdDiscovery(conn network.TCPConn, pkt proto.Message) e
 	return nil
 }
 
-func (h *eventHandler) OnCmdDataReport(conn network.TCPConn, pkt proto.Message) error {
+func (h *eventHandler) OnCmdDataReport(conn network.TCPConn, subcmd uint8, pkt proto.Message) error {
 	switch pkt.(type) {
 	case *gen.MachineMetric:
-		logger.Infof("machine metric: %v", pkt)
+		logger.Infof("machine metric subcmd=%d: %v", subcmd, pkt)
 		return nil
 	case *gen.NetworkMetric:
-		logger.Infof("network metric: %v", pkt)
+		logger.Infof("network metric subcmd=%d: %v", subcmd, pkt)
 		return nil
 	case *gen.StreamMetric:
-		logger.Infof("stream metric: %v", pkt)
+		logger.Infof("stream metric subcmd=%d: %v", subcmd, pkt)
+		return nil
+	case *gen.SessionMetric:
+		logger.Infof("session metric subcmd=%d: %v", subcmd, pkt)
 		return nil
 	}
 	return nil

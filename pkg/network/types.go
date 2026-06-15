@@ -169,7 +169,7 @@ type EventHandler interface {
 	// OnCmdDiscovery is called when the connection receives a discovery command.
 	OnCmdDiscovery(TCPConn, proto.Message) error
 	// OnCmdDataReport is called when the connection receives a data report command.
-	OnCmdDataReport(TCPConn, proto.Message) error
+	OnCmdDataReport(TCPConn, uint8, proto.Message) error
 	// OnCmdConfig is called when the connection receives a config command.
 	OnCmdConfig(TCPConn, proto.Message) error
 	// OnCmdEvent is called when the connection receives a event command.

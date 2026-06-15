@@ -58,14 +58,6 @@ func UnmarshalDataReport(subcmd uint8, data []byte) (proto.Message, error) {
 		networkMetric := &gen.NetworkMetric{}
 		err = proto.Unmarshal(data, networkMetric)
 		return networkMetric, err
-	case uint8(gen.SCMDDataReport_INSTANCE_METRIC):
-		instanceMetric := &gen.InstanceMetric{}
-		err = proto.Unmarshal(data, instanceMetric)
-		return instanceMetric, err
-	case uint8(gen.SCMDDataReport_SESSION_METRIC):
-		sessionMetric := &gen.SessionMetric{}
-		err = proto.Unmarshal(data, sessionMetric)
-		return sessionMetric, err
 	case uint8(gen.SCMDDataReport_STREAM_ADD):
 		streamAdd := &gen.StreamMetric{}
 		err = proto.Unmarshal(data, streamAdd)
@@ -90,6 +82,30 @@ func UnmarshalDataReport(subcmd uint8, data []byte) (proto.Message, error) {
 		streamsQueryAck := &gen.StreamMetric{}
 		err = proto.Unmarshal(data, streamsQueryAck)
 		return streamsQueryAck, err
+	case uint8(gen.SCMDDataReport_SESSION_ADD):
+		sessionAdd := &gen.SessionMetric{}
+		err = proto.Unmarshal(data, sessionAdd)
+		return sessionAdd, err
+	case uint8(gen.SCMDDataReport_SESSION_DELETE):
+		sessionDelete := &gen.SessionMetric{}
+		err = proto.Unmarshal(data, sessionDelete)
+		return sessionDelete, err
+	case uint8(gen.SCMDDataReport_SESSION_STATUS):
+		sessionStatus := &gen.SessionMetric{}
+		err = proto.Unmarshal(data, sessionStatus)
+		return sessionStatus, err
+	case uint8(gen.SCMDDataReport_SESSION_FAILED):
+		sessionFailed := &gen.SessionMetric{}
+		err = proto.Unmarshal(data, sessionFailed)
+		return sessionFailed, err
+	case uint8(gen.SCMDDataReport_SESSION_QUERY_REQ):
+		sessionQueryReq := &gen.SessionMetric{}
+		err = proto.Unmarshal(data, sessionQueryReq)
+		return sessionQueryReq, err
+	case uint8(gen.SCMDDataReport_SESSION_QUERY_ACK):
+		sessionQueryAck := &gen.SessionMetric{}
+		err = proto.Unmarshal(data, sessionQueryAck)
+		return sessionQueryAck, err
 	default:
 		return nil, fmt.Errorf("unknown report subcmd: %d", subcmd)
 	}

@@ -148,8 +148,8 @@ func (h *eventHandler) OnCmdDiscovery(conn network.TCPConn, pkt proto.Message) e
 	return nil
 }
 
-func (h *eventHandler) OnCmdDataReport(conn network.TCPConn, pkt proto.Message) error {
-	logger.Infof("data report command: %v", pkt)
+func (h *eventHandler) OnCmdDataReport(conn network.TCPConn, subcmd uint8, pkt proto.Message) error {
+	logger.Infof("data report command subcmd=%d: %v", subcmd, pkt)
 	return nil
 }
 func (h *eventHandler) OnCmdConfig(conn network.TCPConn, pkt proto.Message) error {

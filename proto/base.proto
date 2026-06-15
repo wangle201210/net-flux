@@ -72,33 +72,38 @@ enum SCMDDataReport {
 
     // 通用机器指标上报指令
     MACHINE_METRIC = 10;
-
     // 网络指标上报指令
     NETWORK_METRIC = 11;
-
     // 实例指标上报指令
     INSTANCE_METRIC = 12;
-
     // 会话指标上报指令
     SESSION_METRIC = 13;
 
     // 流上报指令
     STREAM_ADD = 20;
-
     // 删除流上报指令
     STREAM_DELETE = 21;
-
     // 流状态上报指令
     STREAM_STATUS = 22;
-
     // 流失败上报指令
     STREAM_FAILED = 23;
-
     // 流查询指令
-    STREAMS_QUERY_REQ = 30;
-
+    STREAMS_QUERY_REQ = 24;
     // 流查询响应指令
-    STREAMS_QUERY_ACK = 31;
+    STREAMS_QUERY_ACK = 25;
+
+    // 会话上报指令
+    SESSION_ADD = 30;
+    // 删除会话上报指令
+    SESSION_DELETE = 31;
+    // 会话状态上报指令
+    SESSION_STATUS = 32;
+    // 会话失败上报指令
+    SESSION_FAILED = 33;
+    // 会话查询指令
+    SESSION_QUERY_REQ = 40;
+    // 会话查询响应指令
+    SESSION_QUERY_ACK = 41;
 }
 
 enum SCMDConfig {

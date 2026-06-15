@@ -401,7 +401,7 @@ func (c *tcpConn) OnMessage(conn TCPConn, head *PacketHeader, data []byte) error
 			logger.Errorf("[id=%d] unmarshal data report error: %v", conn.ID(), err)
 			return err
 		}
-		return c.event.OnCmdDataReport(c, pkt)
+		return c.event.OnCmdDataReport(c, head.SubCMD, pkt)
 	case uint8(gen.CMD_CONFIG):
 		pkt, err := misc.UnmarshalConfig(head.SubCMD, data)
 		if err != nil {

@@ -6,13 +6,13 @@ import "base.proto";
 
 option go_package = "github.com/dellinger2023/net-flux/gen;gen";
 
-// 机器状态报告
+// 实例/容器状态报告
 message MachineMetric {
-    // 机器ID
+    // 实例/容器ID；旧客户端可继续使用 machine_id 传递实例标识
     string machine_id = 1;
     // CPU 使用率
     double cpu_usage = 2;
-    // CPU 核心数
+    // CPU 分配核数
     int32 cpu_count = 3;
     // 内存占用
     int64 mem_used = 4;
@@ -36,14 +36,30 @@ message MachineMetric {
     int64 disk_write_count = 13;
     // 采集时间
     int64 timestamp = 14;
-    // 机器额外信息
+    // 实例/容器额外信息
     map<string, string> extra = 15;
-    // 节点名称
-    string node_name = 16;
-    // 节点所属区域或机房名称
-    string region = 17;
-    // 父节点业务标识
-    string parent_node_id = 18;
+    // 实例ID；为空时服务端可回退使用 machine_id
+    string instance_id = 16;
+    // 实例名称
+    string instance_name = 17;
+    // 所属节点ID
+    string node_id = 18;
+    // 所属节点名称
+    string node_name = 19;
+    // 所属区域或机房名称
+    string region = 20;
+    // 节点状态
+    string node_status = 21;
+    // 实例状态
+    string status = 22;
+    // 网络入站吞吐量(bps)
+    int32 network_in = 23;
+    // 网络出站吞吐量(bps)
+    int32 network_out = 24;
+    // 实例启动时间
+    int64 start_time = 27;
+    // 实例版本号
+    string version = 28;
 }
 
 // 网络状态报告
@@ -64,55 +80,9 @@ message NetworkMetric {
     map<string, string> extra = 7;
 }
 
-// 实例状态报告
-message InstanceMetric {
-    // 实例ID
-    string instance_id = 1;
-    // 实例名称
-    string instance_name = 2;
-    // 机器ID
-    string machine_id = 3;
-    // 节点名称
-    string node_name = 4;
-    // 节点所属区域或机房名称
-    string region = 5;
-    // 节点状态
-    string node_status = 6;
-    // 实例状态
-    string status = 7;
-    // CPU 分配容量
-    double cpu_allocated = 8;
-    // CPU 使用率
-    double cpu_usage = 9;
-    // 内存分配字节数
-    int64 mem_total = 10;
-    // 内存使用字节数
-    int64 mem_used = 11;
-    // 磁盘读取字节数
-    int64 disk_read_bytes = 12;
-    // 磁盘写入字节数
-    int64 disk_write_bytes = 13;
-    // 网络入站吞吐量(bps)
-    int32 network_in = 14;
-    // 网络出站吞吐量(bps)
-    int32 network_out = 15;
-    // 当前承载直播流数量
-    int32 live_streams = 16;
-    // 当前会话数量
-    int32 sessions = 17;
-    // 实例启动时间
-    int64 start_time = 18;
-    // 实例版本号
-    string version = 19;
-    // 采集时间
-    int64 timestamp = 20;
-    // 实例额外信息
-    map<string, string> extra = 21;
-}
-
 // 流状态报告
 message StreamMetric {
-    // 机器ID
+    // 实例/容器ID；旧客户端可继续使用 machine_id 传递实例标识
     string machine_id           = 1;
     // 服务器类型
     MachineType machine_type    = 2;
@@ -164,6 +134,8 @@ message StreamMetric {
     int32 current_active_sessions = 25;
     // 是否启用水印
     bool watermark_enabled      = 26;
+    // 所属节点ID
+    string node_id              = 27;
 }
 
 // 会话链路跳点
@@ -214,7 +186,7 @@ message SessionMetric {
     int32 current_width = 14;
     // 当前高度
     int32 current_height = 15;
-    // 节点ID
+    // 实例/容器ID；旧客户端可继续使用 machine_id 传递实例标识
     string machine_id = 16;
     // 节点名称
     string node_name = 17;
@@ -230,4 +202,6 @@ message SessionMetric {
     int64 timestamp = 22;
     // 会话额外信息
     map<string, string> extra = 23;
+    // 所属节点ID
+    string node_id = 24;
 }

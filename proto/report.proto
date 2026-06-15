@@ -38,6 +38,12 @@ message MachineMetric {
     int64 timestamp = 14;
     // 机器额外信息
     map<string, string> extra = 15;
+    // 节点名称
+    string node_name = 16;
+    // 节点所属区域或机房名称
+    string region = 17;
+    // 父节点业务标识
+    string parent_node_id = 18;
 }
 
 // 网络状态报告
@@ -56,6 +62,52 @@ message NetworkMetric {
     int64 timestamp = 6;
     // 网络额外信息
     map<string, string> extra = 7;
+}
+
+// 实例状态报告
+message InstanceMetric {
+    // 实例ID
+    string instance_id = 1;
+    // 实例名称
+    string instance_name = 2;
+    // 机器ID
+    string machine_id = 3;
+    // 节点名称
+    string node_name = 4;
+    // 节点所属区域或机房名称
+    string region = 5;
+    // 节点状态
+    string node_status = 6;
+    // 实例状态
+    string status = 7;
+    // CPU 分配容量
+    double cpu_allocated = 8;
+    // CPU 使用率
+    double cpu_usage = 9;
+    // 内存分配字节数
+    int64 mem_total = 10;
+    // 内存使用字节数
+    int64 mem_used = 11;
+    // 磁盘读取字节数
+    int64 disk_read_bytes = 12;
+    // 磁盘写入字节数
+    int64 disk_write_bytes = 13;
+    // 网络入站吞吐量(bps)
+    int32 network_in = 14;
+    // 网络出站吞吐量(bps)
+    int32 network_out = 15;
+    // 当前承载直播流数量
+    int32 live_streams = 16;
+    // 当前会话数量
+    int32 sessions = 17;
+    // 实例启动时间
+    int64 start_time = 18;
+    // 实例版本号
+    string version = 19;
+    // 采集时间
+    int64 timestamp = 20;
+    // 实例额外信息
+    map<string, string> extra = 21;
 }
 
 // 流状态报告
@@ -88,4 +140,94 @@ message StreamMetric {
     int64 timestamp             = 13;
     // 流额外信息
     map<string, string> extra   = 14;
+    // 租户ID
+    string tenant_id            = 15;
+    // 节点名称
+    string node_name            = 16;
+    // 实例ID
+    string instance_id          = 17;
+    // 实例名称
+    string instance_name        = 18;
+    // 帧率
+    double fps                  = 19;
+    // 丢包率
+    double packet_loss          = 20;
+    // 流开始时间
+    int64 start_time            = 21;
+    // 流持续时间(秒)
+    int32 duration              = 22;
+    // 平均延迟(ms)
+    int32 avg_delay             = 23;
+    // 历史累计会话数量
+    int64 total_sessions_lifetime = 24;
+    // 当前活跃会话数量
+    int32 current_active_sessions = 25;
+    // 是否启用水印
+    bool watermark_enabled      = 26;
+}
+
+// 会话链路跳点
+message LinkHop {
+    // 跳点ID
+    string hop_id = 1;
+    // 跳点名称
+    string hop_name = 2;
+    // 跳点类型
+    string hop_type = 3;
+    // 节点ID
+    string node_id = 4;
+    // 节点名称
+    string node_name = 5;
+    // 跳点延迟(ms)
+    int32 latency = 6;
+}
+
+// 会话状态报告
+message SessionMetric {
+    // 会话ID
+    string session_id = 1;
+    // 流ID
+    string stream_id = 2;
+    // 流名称
+    string stream_name = 3;
+    // 租户ID
+    string tenant_id = 4;
+    // 客户端ID
+    string client_id = 5;
+    // 客户端IP
+    string client_ip = 6;
+    // 客户端类型
+    string client_type = 7;
+    // 用户名称
+    string user_name = 8;
+    // 播放协议
+    StreamProtocol protocol = 9;
+    // 会话开始时间
+    int64 start_time = 10;
+    // 播放持续时间(秒)
+    int32 play_duration = 11;
+    // 当前帧率
+    double current_fps = 12;
+    // 当前码率(Kbps)
+    int32 current_bitrate = 13;
+    // 当前宽度
+    int32 current_width = 14;
+    // 当前高度
+    int32 current_height = 15;
+    // 节点ID
+    string machine_id = 16;
+    // 节点名称
+    string node_name = 17;
+    // 实例ID
+    string instance_id = 18;
+    // 实例名称
+    string instance_name = 19;
+    // 链路跳点
+    repeated LinkHop link_hops = 20;
+    // 链路总延迟(ms)
+    int32 total_link_latency = 21;
+    // 采集时间
+    int64 timestamp = 22;
+    // 会话额外信息
+    map<string, string> extra = 23;
 }

@@ -58,6 +58,14 @@ func UnmarshalDataReport(subcmd uint8, data []byte) (proto.Message, error) {
 		networkMetric := &gen.NetworkMetric{}
 		err = proto.Unmarshal(data, networkMetric)
 		return networkMetric, err
+	case uint8(gen.SCMDDataReport_INSTANCE_METRIC):
+		instanceMetric := &gen.InstanceMetric{}
+		err = proto.Unmarshal(data, instanceMetric)
+		return instanceMetric, err
+	case uint8(gen.SCMDDataReport_SESSION_METRIC):
+		sessionMetric := &gen.SessionMetric{}
+		err = proto.Unmarshal(data, sessionMetric)
+		return sessionMetric, err
 	case uint8(gen.SCMDDataReport_STREAM_ADD):
 		streamAdd := &gen.StreamMetric{}
 		err = proto.Unmarshal(data, streamAdd)

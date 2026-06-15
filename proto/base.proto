@@ -76,6 +76,12 @@ enum SCMDDataReport {
     // 网络指标上报指令
     NETWORK_METRIC = 11;
 
+    // 实例指标上报指令
+    INSTANCE_METRIC = 12;
+
+    // 会话指标上报指令
+    SESSION_METRIC = 13;
+
     // 流上报指令
     STREAM_ADD = 20;
 

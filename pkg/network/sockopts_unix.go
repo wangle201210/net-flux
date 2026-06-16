@@ -2,12 +2,12 @@
 
 package network
 
-import "syscall"
+import "golang.org/x/sys/unix"
 
 func sysSetsockoptReuseAddr(fd uintptr, v int) error {
-	return syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEADDR, v)
+	return unix.SetsockoptInt(int(fd), unix.SOL_SOCKET, unix.SO_REUSEADDR, v)
 }
 
 func sysSetsockoptReusePort(fd uintptr, v int) error {
-	return syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEPORT, v)
+	return unix.SetsockoptInt(int(fd), unix.SOL_SOCKET, unix.SO_REUSEPORT, v)
 }

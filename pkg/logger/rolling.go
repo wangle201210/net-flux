@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 )
 
@@ -97,10 +96,10 @@ func (rf *RollingFile) Write(p []byte) (n int, err error) {
 
 func (rf *RollingFile) RedirectSTDOutput() error {
 	if rf.fileHandler != nil {
-		if err := syscall.Dup2(int(rf.fileHandler.Fd()), 1); err != nil {
+		if err := dup2(int(rf.fileHandler.Fd()), 1); err != nil {
 			return err
 		}
-		if err := syscall.Dup2(int(rf.fileHandler.Fd()), 2); err != nil {
+		if err := dup2(int(rf.fileHandler.Fd()), 2); err != nil {
 			return err
 		}
 		return nil

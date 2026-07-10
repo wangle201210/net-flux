@@ -7,12 +7,16 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
 	"github.com/dellinger2023/net-flux/gen"
+	"github.com/dellinger2023/net-flux/pkg/dataflow"
+	"github.com/dellinger2023/net-flux/pkg/dataflow/core"
 	"github.com/dellinger2023/net-flux/pkg/logger"
 	"github.com/dellinger2023/net-flux/pkg/network"
+	"github.com/dellinger2023/net-flux/pkg/util"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -66,6 +70,18 @@ func main() {
 	}
 }
 
+func sleepCtx(ctx context.Context, d time.Duration) bool {
+	timer := time.NewTimer(d)
+	defer timer.Stop()
+
+	select {
+	case <-ctx.Done():
+		return false
+	case <-timer.C:
+		return true
+	}
+}
+
 func interactiveLoop(ctx context.Context, cli *network.TcpClient) {
 	for ctx.Err() == nil {
 		logger.Info(slogan)
@@ -114,6 +130,113 @@ func interactiveLoop(ctx context.Context, cli *network.TcpClient) {
 			}
 			if err := cli.Write(uint8(gen.CMD_DISCOVERY), uint8(gen.SCMDDisco_LOOKUP), lookup); err != nil {
 				logger.Errorf("lookup write failed: %v", err)
+			}
+		case 4:
+			logger.Info("上报数据")
+			nodeInfo, err := core.ReadBaseNodeInfo(node)
+			if err != nil {
+				logger.Errorf("read base node info failed: %v", err)
+				return
+			}
+			cfg := &core.DataflowConfig{
+				NodeInfo: &core.NodeInfo{
+					ID:        nodeInfo.ID,
+					IP:        nodeInfo.IP,
+					Port:      nodeInfo.Port,
+					Node:      node,
+					Version:   nodeInfo.Version,
+					Status:    nodeInfo.Status,
+					StartTime: time.Now().Unix(),
+				},
+				ProbeAddresses: []string{
+					"www.baidu.com",
+					"www.google.com",
+				},
+				ReportMachineInterval: 10 * time.Second,
+				ReportNetworkInterval: 10 * time.Second,
+			}
+			if err := dataflow.Initialize(cli, cfg); err != nil {
+				logger.Errorf("dataflow initialize failed: %v", err)
+				break
+			}
+
+			streamCtx, streamCancel := context.WithCancel(context.Background())
+			go func() {
+				defer streamCancel()
+				for streamCtx.Err() == nil {
+					streamId := util.NewUUID(true)
+					if !sleepCtx(streamCtx, time.Second) {
+						return
+					}
+					if err := dataflow.NotifyNewStreamEvent(&gen.StreamMetric{
+						MachineId:   nodeInfo.ID,
+						StreamId:    streamId,
+						StreamPath:  "/vod/" + streamId + ".m3u8",
+						MachineType: gen.MachineType_MT_GATEWAY,
+						Status:      gen.StreamStatus_SS_RUNNING,
+						VideoCodec:  gen.StreamCodec_SC_H264,
+						AudioCodec:  gen.StreamCodec_SC_AAC,
+						Protocol:    gen.StreamProtocol_SP_HTTP_FLV,
+						Bitrate:     1000000,
+						Width:       1920,
+						Height:      1080,
+						StreamAlias: "/liveshow",
+						Timestamp:   time.Now().Unix(),
+						NodeId:      strconv.Itoa(node),
+					}); err != nil {
+						logger.Errorf("notify new stream failed: %v", err)
+					}
+					if !sleepCtx(streamCtx, time.Second) {
+						return
+					}
+					if err := dataflow.NotifyDeleteStreamEvent(&gen.StreamMetric{
+						MachineId:   nodeInfo.ID,
+						StreamId:    streamId,
+						StreamPath:  "/vod/" + streamId + ".m3u8",
+						MachineType: gen.MachineType_MT_GATEWAY,
+					}); err != nil {
+						logger.Errorf("notify delete stream failed: %v", err)
+					}
+					if !sleepCtx(streamCtx, time.Second) {
+						return
+					}
+					if err := dataflow.NotifyStreamFailedEvent(&gen.StreamMetric{
+						MachineId:   nodeInfo.ID,
+						StreamId:    streamId,
+						StreamPath:  "/vod/" + streamId + ".m3u8",
+						MachineType: gen.MachineType_MT_GATEWAY,
+					}); err != nil {
+						logger.Errorf("notify stream failed event failed: %v", err)
+					}
+					if !sleepCtx(streamCtx, time.Second) {
+						return
+					}
+					if err := dataflow.NotifyStreamStatusEvent(&gen.StreamMetric{
+						MachineId:   nodeInfo.ID,
+						StreamId:    streamId,
+						StreamPath:  "/vod/" + streamId + ".m3u8",
+						MachineType: gen.MachineType_MT_GATEWAY,
+					}); err != nil {
+						logger.Errorf("notify stream status failed: %v", err)
+					}
+					if !sleepCtx(streamCtx, time.Second) {
+						return
+					}
+					if err := dataflow.NotifyStreamsQueryEvent(&gen.StreamMetric{
+						MachineId:   nodeInfo.ID,
+						StreamId:    streamId,
+						StreamPath:  "/vod/" + streamId + ".m3u8",
+						MachineType: gen.MachineType_MT_GATEWAY,
+					}); err != nil {
+						logger.Errorf("notify streams query failed: %v", err)
+					}
+				}
+			}()
+
+			time.Sleep(30 * time.Second)
+			streamCancel()
+			if err := dataflow.Shutdown(); err != nil {
+				logger.Errorf("dataflow shutdown failed: %v", err)
 			}
 		default:
 			logger.Info("无效的选择")

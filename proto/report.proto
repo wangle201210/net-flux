@@ -66,18 +66,24 @@ message MachineMetric {
 message NetworkMetric {
     // 机器ID
     string machine_id = 1;
+    // 节点ID
+    string node_id = 2;
     // 源IP
-    string source_ip = 2;
+    string source_ip = 3;
     // 目的IP
-    string destination_ip = 3;
+    string destination_ip = 4;
     // 网络延迟(ms)
-    int32 rtt = 4;
-    // 网络吞吐量(bps)
-    int32 throughput = 5;
+    int32 rtt = 5;
+    // 网络抖动(ms)
+    int32 jitter = 6;
+    // 网络丢包率
+    double packet_loss = 7;
+    // 状态码
+    int32 status_code = 8;
     // 采集时间
-    int64 timestamp = 6;
+    int64 timestamp = 9;
     // 网络额外信息
-    map<string, string> extra = 7;
+    map<string, string> extra = 10;
 }
 
 // 流状态报告

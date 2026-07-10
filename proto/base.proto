@@ -6,8 +6,10 @@ option go_package = "github.com/dellinger2023/net-flux/gen;gen";
 
 enum MachineType {
     MT_UNIVERSAL    = 0;
-    MT_GATEWAY      = 1;
-    MT_MEDIASERVER  = 2;
+    MT_GATEWAY      = 10;
+    MT_MEDIASERVER  = 20;
+    MT_STRATEGY     = 30;
+    MT_RECORD       = 40;
     MT_OTHER        = 100;
 }
 

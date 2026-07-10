@@ -5,6 +5,8 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+
+	"github.com/dellinger2023/net-flux/pkg/logger"
 )
 
 // get the current working directory
@@ -60,12 +62,13 @@ func UserName() string {
 // @return: the hostname
 // @example:
 // - Hostname() -> "localhost"
-func Hostname() string {
+func Hostname() (string, error) {
 	hostname, err := os.Hostname()
 	if err != nil {
-		return ""
+		logger.Errorf("get hostname failed: %v", err)
+		return EnvHostname(), nil // 返回环境变量中的 hostname
 	}
-	return hostname
+	return hostname, nil
 }
 
 // get the host IP
@@ -74,7 +77,11 @@ func Hostname() string {
 // @example:
 // - HostIP() -> ["127.0.0.1", "::1"]
 func HostIP() ([]string, error) {
-	ip, err := net.LookupIP(Hostname())
+	hostname, err := Hostname()
+	if err != nil {
+		return nil, err
+	}
+	ip, err := net.LookupIP(hostname)
 	if err != nil {
 		return nil, err
 	}

@@ -149,8 +149,9 @@ func interactiveLoop(ctx context.Context, cli *network.TcpClient) {
 					StartTime: time.Now().Unix(),
 				},
 				ProbeAddresses: []string{
-					"www.baidu.com",
-					"www.google.com",
+					"www.baidu.com",    // 国内，网速快
+					"www.ludechem.com", // 国外，网速慢
+					"www.google.com",   // 国外，需要FQ
 				},
 				ReportMachineInterval: 10 * time.Second,
 				ReportNetworkInterval: 10 * time.Second,

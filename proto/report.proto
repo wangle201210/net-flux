@@ -142,6 +142,8 @@ message StreamMetric {
     bool watermark_enabled      = 26;
     // 所属节点ID
     string node_id              = 27;
+    // 设备国标ID
+    string device_id            = 28;
 }
 
 // 会话链路跳点
@@ -210,4 +212,6 @@ message SessionMetric {
     map<string, string> extra = 23;
     // 所属节点ID
     string node_id = 24;
+    // 设备国标ID
+    string device_id = 25;
 }

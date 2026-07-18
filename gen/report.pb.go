@@ -475,7 +475,9 @@ type StreamMetric struct {
 	// 是否启用水印
 	WatermarkEnabled bool `protobuf:"varint,26,opt,name=watermark_enabled,json=watermarkEnabled,proto3" json:"watermark_enabled,omitempty"`
 	// 所属节点ID
-	NodeId        string `protobuf:"bytes,27,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
+	NodeId string `protobuf:"bytes,27,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
+	// 设备国标ID
+	DeviceId      string `protobuf:"bytes,28,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -699,6 +701,13 @@ func (x *StreamMetric) GetNodeId() string {
 	return ""
 }
 
+func (x *StreamMetric) GetDeviceId() string {
+	if x != nil {
+		return x.DeviceId
+	}
+	return ""
+}
+
 // 会话链路跳点
 type LinkHop struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -840,7 +849,9 @@ type SessionMetric struct {
 	// 会话额外信息
 	Extra map[string]string `protobuf:"bytes,23,rep,name=extra,proto3" json:"extra,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// 所属节点ID
-	NodeId        string `protobuf:"bytes,24,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
+	NodeId string `protobuf:"bytes,24,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
+	// 设备国标ID
+	DeviceId      string `protobuf:"bytes,25,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1043,6 +1054,13 @@ func (x *SessionMetric) GetNodeId() string {
 	return ""
 }
 
+func (x *SessionMetric) GetDeviceId() string {
+	if x != nil {
+		return x.DeviceId
+	}
+	return ""
+}
+
 var File_report_proto protoreflect.FileDescriptor
 
 const file_report_proto_rawDesc = "" +
@@ -1106,7 +1124,7 @@ const file_report_proto_rawDesc = "" +
 	"\n" +
 	"ExtraEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb2\b\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xcf\b\n" +
 	"\fStreamMetric\x12\x1d\n" +
 	"\n" +
 	"machine_id\x18\x01 \x01(\tR\tmachineId\x127\n" +
@@ -1142,7 +1160,8 @@ const file_report_proto_rawDesc = "" +
 	"\x17total_sessions_lifetime\x18\x18 \x01(\x03R\x15totalSessionsLifetime\x126\n" +
 	"\x17current_active_sessions\x18\x19 \x01(\x05R\x15currentActiveSessions\x12+\n" +
 	"\x11watermark_enabled\x18\x1a \x01(\bR\x10watermarkEnabled\x12\x17\n" +
-	"\anode_id\x18\x1b \x01(\tR\x06nodeId\x1a8\n" +
+	"\anode_id\x18\x1b \x01(\tR\x06nodeId\x12\x1b\n" +
+	"\tdevice_id\x18\x1c \x01(\tR\bdeviceId\x1a8\n" +
 	"\n" +
 	"ExtraEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -1153,7 +1172,7 @@ const file_report_proto_rawDesc = "" +
 	"\bhop_type\x18\x03 \x01(\tR\ahopType\x12\x17\n" +
 	"\anode_id\x18\x04 \x01(\tR\x06nodeId\x12\x1b\n" +
 	"\tnode_name\x18\x05 \x01(\tR\bnodeName\x12\x18\n" +
-	"\alatency\x18\x06 \x01(\x05R\alatency\"\x99\a\n" +
+	"\alatency\x18\x06 \x01(\x05R\alatency\"\xb6\a\n" +
 	"\rSessionMetric\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x1b\n" +
@@ -1186,7 +1205,8 @@ const file_report_proto_rawDesc = "" +
 	"\x12total_link_latency\x18\x15 \x01(\x05R\x10totalLinkLatency\x12\x1c\n" +
 	"\ttimestamp\x18\x16 \x01(\x03R\ttimestamp\x127\n" +
 	"\x05extra\x18\x17 \x03(\v2!.netflux.SessionMetric.ExtraEntryR\x05extra\x12\x17\n" +
-	"\anode_id\x18\x18 \x01(\tR\x06nodeId\x1a8\n" +
+	"\anode_id\x18\x18 \x01(\tR\x06nodeId\x12\x1b\n" +
+	"\tdevice_id\x18\x19 \x01(\tR\bdeviceId\x1a8\n" +
 	"\n" +
 	"ExtraEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +

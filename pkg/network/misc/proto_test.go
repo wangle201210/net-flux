@@ -34,3 +34,43 @@ func TestUnmarshalDataReportSessionLifecycle(t *testing.T) {
 		}
 	}
 }
+
+func TestReportMetricsRoundTripDeviceID(t *testing.T) {
+	streamPayload, err := proto.Marshal(&gen.StreamMetric{
+		StreamId: "stream-a",
+		DeviceId: "device-a",
+	})
+	if err != nil {
+		t.Fatalf("marshal stream metric: %v", err)
+	}
+	streamMessage, err := UnmarshalDataReport(uint8(gen.SCMDDataReport_STREAM_ADD), streamPayload)
+	if err != nil {
+		t.Fatalf("unmarshal stream metric: %v", err)
+	}
+	stream, ok := streamMessage.(*gen.StreamMetric)
+	if !ok {
+		t.Fatalf("expected stream metric, got %T", streamMessage)
+	}
+	if stream.GetDeviceId() != "device-a" {
+		t.Fatalf("expected stream device id device-a, got %s", stream.GetDeviceId())
+	}
+
+	sessionPayload, err := proto.Marshal(&gen.SessionMetric{
+		SessionId: "session-a",
+		DeviceId:  "device-a",
+	})
+	if err != nil {
+		t.Fatalf("marshal session metric: %v", err)
+	}
+	sessionMessage, err := UnmarshalDataReport(uint8(gen.SCMDDataReport_SESSION_ADD), sessionPayload)
+	if err != nil {
+		t.Fatalf("unmarshal session metric: %v", err)
+	}
+	session, ok := sessionMessage.(*gen.SessionMetric)
+	if !ok {
+		t.Fatalf("expected session metric, got %T", sessionMessage)
+	}
+	if session.GetDeviceId() != "device-a" {
+		t.Fatalf("expected session device id device-a, got %s", session.GetDeviceId())
+	}
+}
